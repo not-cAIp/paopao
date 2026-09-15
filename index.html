@@ -63,7 +63,7 @@
 
   .thread{display:flex;flex-direction:column;}
   .msg{max-width:86%;border-radius:14px;padding:10px 13px;font-size:13.5px;margin-bottom:10px;line-height:1.5;}
-  .msg.out{background:var(--surface-2);border:1px solid var(--line);}
+  .msg.out{background:var(--surface-2);border:1px solid var(--line);margin-left:auto;}
   .msg.priv{background:var(--accent-2-soft);border:1px dashed var(--accent-2);}
   .msg .tag{display:block;font-family:"JetBrains Mono",monospace;font-size:10px;opacity:.75;margin-bottom:3px;}
 
@@ -120,16 +120,31 @@
       { time: "09-13 07:45", from: "周晏星STUDIO", text: "今天行程有点满，晚点更新，大家等我～" }
     ],
     personalMessages: {
-      note: "这三条不是群发——只有 #0412 这个账号收到过。别的订阅号翻遍消息记录也找不到这三条。",
+      note: "这些不是群发——只有 #0412 这个账号收到过。",
       messages: [
-        { from: "周晏星", time: "09-13 19:52", text: "今天不太顺，等我忙完这边过去找你。" },
-        { from: "周晏星", time: "09-13 21:02", text: "到了，楼下等我一下。" },
-        { from: "周晏星", time: "09-13 23:12", text: "今晚真的说了很多，谢谢你听我说完。" }
+        { from: "周晏星", time: "09-08 21:40", text: "彩排定妆照发我看看呗" },
+        { from: "你", time: "09-08 21:41", text: "不行，剧透" },
+        { from: "周晏星", time: "09-10 23:02", text: "今天彩排好累" },
+        { from: "你", time: "09-10 23:05", text: "早点睡，别等我" },
+        { from: "周晏星", time: "09-11 20:15", text: "你是不是又没吃饭" },
+        { from: "你", time: "09-11 20:20", text: "年糕今天又打翻猫粮了" },
+        { from: "周晏星", time: "09-12 22:40", text: "最近真的睡不够" },
+        { from: "你", time: "09-12 22:41", text: "明天应该会好一点" },
+        { from: "周晏星", time: "09-13 19:26", text: "计划变了，不去了。", clueId: "c11" },
+        { from: "周晏星", time: "09-13 20:02", text: "你别过来。" },
+        { from: "周晏星", time: "09-13 20:36", text: "算了。来吧。", clueId: "c12" },
+        { from: "你", time: "09-13 20:50", text: "到底怎么了" },
+        { from: "你", time: "09-13 21:06", text: "到了，楼下等我一下。", clueId: "c13" },
+        { from: "周晏星", time: "09-13 21:47", text: "我真的不知道该怎么跟你解释。" },
+        { from: "周晏星", time: "09-13 22:11", text: "如果你已经决定了，那就这样吧。" },
+        { from: "周晏星", time: "09-13 23:12", text: "今晚真的说了很多。" },
+        { from: "周晏星", time: "09-13 23:12", text: "谢谢你听我说完。", clueId: "c14" },
+        { from: "周晏星", time: "09-13 23:36", text: "你睡了吗？", meta: "未读", clueId: "c31" }
       ]
     }
   };
 
-  const RETURN_URL = "https://saraliuxt-coder.github.io/idol-fall/?clue=t04";
+  const RETURN_URL = "https://saraliuxt-coder.github.io/idol-fall/?clue=c11,c12,c13,c14,c31";
   let attempts = 0;
   let activeTab = "broadcast";
 
@@ -176,7 +191,7 @@
     el.innerHTML = `
       <p class="note">${DATA.personalMessages.note}</p>
       <div class="thread">${DATA.personalMessages.messages
-        .map((m) => `<div class="msg priv"><span class="tag mono">${m.from} · ${m.time}</span>${m.text}</div>`)
+        .map((m) => `<div class="msg ${m.from === "你" ? "out" : "priv"}"><span class="tag mono">${m.from} · ${m.time}${m.meta ? " · " + m.meta : ""}</span>${m.text}</div>`)
         .join("")}</div>
       <a class="return-row" href="${RETURN_URL}">‹ 返回超话继续调查</a>
     `;
