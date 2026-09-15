@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>泡泡</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@700;900&family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+  :root{
+    --bg:#0e1116; --surface:#171b22; --surface-2:#1d222b;
+    --ink:#e7e9ed; --ink-soft:#9aa2ad; --ink-faint:#6b7280;
+    --line:#262b33; --accent:#ff5c72; --accent-ink:#14171c;
+    --accent-2:#e0a542; --accent-2-soft:#2b2413; --danger:#e0645f;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; min-height:100vh; display:flex; justify-content:center;
+    background:#05070a; color:var(--ink);
+    font-family:"Noto Sans SC","Noto Sans",system-ui,sans-serif;
+    padding:24px 16px;
+  }
+  .mono{font-family:"JetBrains Mono",monospace;font-variant-numeric:tabular-nums;}
+  #app{ width:100%; max-width:420px; }
+  header{
+    display:flex; align-items:center; gap:10px; padding:14px 4px 20px;
+    border-bottom:1px solid var(--line); margin-bottom:20px;
+  }
+  header .mark{
+    width:30px;height:30px;border-radius:9px;
+    background:linear-gradient(135deg,var(--accent-2),var(--accent));
+    display:flex;align-items:center;justify-content:center;font-weight:900;color:#14171c;
+  }
+  header h1{font-family:"Noto Serif SC",serif;font-size:18px;margin:0;}
+  header .sub{font-size:11.5px;color:var(--ink-faint);margin-top:1px;}
+
+  .intro{color:var(--ink-soft);font-size:13.5px;line-height:1.7;margin-bottom:18px;}
+
+  .card{
+    background:var(--surface); border:1px solid var(--line); border-radius:14px;
+    padding:22px; box-shadow:0 8px 24px -12px rgba(0,0,0,.6);
+  }
+  .card .app-name{font-weight:700;font-size:16px;margin-bottom:4px;}
+  .card .app-sub{font-size:12.5px;color:var(--ink-faint);margin-bottom:16px;}
+  input{
+    width:100%; border:1px solid var(--line); border-radius:8px; padding:10px 12px;
+    font-size:13px; color:var(--ink); margin-bottom:9px; background:var(--surface-2);
+    font-family:"JetBrains Mono",monospace;
+  }
+  input::placeholder{color:var(--ink-faint);}
+  button{
+    width:100%; background:var(--accent); color:var(--accent-ink); border:none; border-radius:8px;
+    padding:11px; text-align:center; font-size:13.5px; font-weight:700; margin-top:6px; cursor:pointer;
+  }
+  .hint{font-size:11.5px;color:var(--accent-2);margin-top:12px;line-height:1.6;}
+  .error{font-size:11.5px;color:var(--danger);margin-top:12px;}
+
+  .tabs{display:flex;gap:6px;margin-bottom:14px;}
+  .tabs button{
+    flex:1;background:var(--surface-2);border:1px solid var(--line);color:var(--ink-soft);
+    border-radius:8px;padding:9px;font-size:12.5px;margin:0;font-weight:500;
+  }
+  .tabs button.active{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:700;}
+
+  .thread{display:flex;flex-direction:column;}
+  .msg{max-width:86%;border-radius:14px;padding:10px 13px;font-size:13.5px;margin-bottom:10px;line-height:1.5;}
+  .msg.out{background:var(--surface-2);border:1px solid var(--line);}
+  .msg.priv{background:var(--accent-2-soft);border:1px dashed var(--accent-2);}
+  .msg .tag{display:block;font-family:"JetBrains Mono",monospace;font-size:10px;opacity:.75;margin-bottom:3px;}
+
+  .note{font-size:12.5px;color:var(--ink-soft);margin-bottom:14px;line-height:1.6;}
+
+  .return-row{
+    display:block; text-align:center; margin-top:18px; padding-top:16px;
+    border-top:1px solid var(--line); color:var(--accent); font-size:13px;
+    text-decoration:none; cursor:pointer;
+  }
+  .return-row:hover{text-decoration:underline;}
+
+  .loggedas{font-size:12px;color:var(--ink-faint);margin-bottom:12px;}
+  [hidden]{display:none!important;}
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="mark">泡</div>
+    <div>
+      <h1>泡泡</h1>
+      <div class="sub">粉丝专属通讯</div>
+    </div>
+  </header>
+
+  <p class="intro" id="intro">粉丝专属通讯 App，登录后能看到这个账号收到过的所有消息。账号密码没人直接告诉过你——要从别处拼出来。</p>
+
+  <div class="card" id="login-card">
+    <div class="app-name">泡泡</div>
+    <div class="app-sub">粉丝账号登录</div>
+    <input id="user" type="text" placeholder="账号（粉丝编号）" />
+    <input id="pass" type="password" placeholder="密码" />
+    <button id="login-btn">登录</button>
+    <div id="login-msg"></div>
+  </div>
+
+  <div class="card" id="inbox-card" hidden>
+    <div class="loggedas" id="loggedas"></div>
+    <div class="tabs">
+      <button data-tab="broadcast" class="active">群发消息</button>
+      <button data-tab="personal">专属消息</button>
+    </div>
+    <div id="tab-content"></div>
+  </div>
+</div>
+
+<script>
+  const DATA = {
+    login: { username: "0412", password: "0622" },
+    broadcasts: [
+      { time: "09-10 07:30", from: "周晏星STUDIO", text: "早呀，今天也要元气满满！记得看今晚的直播哦～" },
+      { time: "09-11 22:10", from: "周晏星STUDIO", text: "巡演倒计时3天，好紧张但也好期待，杭州的姐妹到时候见！" },
+      { time: "09-13 07:45", from: "周晏星STUDIO", text: "今天行程有点满，晚点更新，大家等我～" }
+    ],
+    personalMessages: {
+      note: "这三条不是群发——只有 #0412 这个账号收到过。别的订阅号翻遍消息记录也找不到这三条。",
+      messages: [
+        { from: "周晏星", time: "09-13 19:52", text: "今天不太顺，等我忙完这边过去找你。" },
+        { from: "周晏星", time: "09-13 21:02", text: "到了，楼下等我一下。" },
+        { from: "周晏星", time: "09-13 23:12", text: "今晚真的说了很多，谢谢你听我说完。" }
+      ]
+    }
+  };
+
+  const RETURN_URL = "https://saraliuxt-coder.github.io/idol-fall/?clue=t04";
+  let attempts = 0;
+  let activeTab = "broadcast";
+
+  const loginCard = document.getElementById("login-card");
+  const inboxCard = document.getElementById("inbox-card");
+  const intro = document.getElementById("intro");
+  const loginMsg = document.getElementById("login-msg");
+
+  document.getElementById("login-btn").addEventListener("click", () => {
+    const u = document.getElementById("user").value.trim().replace(/^#/, "");
+    const p = document.getElementById("pass").value.trim();
+    if (u === DATA.login.username && p === DATA.login.password) {
+      loginCard.hidden = true;
+      intro.hidden = true;
+      inboxCard.hidden = false;
+      document.getElementById("loggedas").textContent = `已登录账号 #${DATA.login.username}。`;
+      renderTab();
+      return;
+    }
+    attempts++;
+    if (attempts >= 3) {
+      loginMsg.innerHTML = `<div class="hint">密码格式为 4 位数字。提示：这个账号的主人有个习惯，喜欢把重要日期设成密码。</div>`;
+    } else {
+      loginMsg.innerHTML = `<div class="error">账号或密码错误。</div>`;
+    }
+  });
+
+  document.querySelectorAll(".tabs button").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      activeTab = btn.dataset.tab;
+      document.querySelectorAll(".tabs button").forEach((b) => b.classList.toggle("active", b === btn));
+      renderTab();
+    });
+  });
+
+  function renderTab() {
+    const el = document.getElementById("tab-content");
+    if (activeTab === "broadcast") {
+      el.innerHTML = `<div class="thread">${DATA.broadcasts
+        .map((m) => `<div class="msg out"><span class="tag mono">${m.from} · ${m.time}</span>${m.text}</div>`)
+        .join("")}</div>`;
+      return;
+    }
+    el.innerHTML = `
+      <p class="note">${DATA.personalMessages.note}</p>
+      <div class="thread">${DATA.personalMessages.messages
+        .map((m) => `<div class="msg priv"><span class="tag mono">${m.from} · ${m.time}</span>${m.text}</div>`)
+        .join("")}</div>
+      <a class="return-row" href="${RETURN_URL}">‹ 返回超话继续调查</a>
+    `;
+  }
+</script>
+</body>
+</html>
