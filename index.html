@@ -183,10 +183,16 @@
   const intro = document.getElementById("intro");
   const loginMsg = document.getElementById("login-msg");
 
+  // 有些输入法手动打字时会把字母数字打成全角，肉眼几乎看不出来，但和
+  // 半角字符串直接比较会判定不相等——粘贴进来的内容不受输入法影响所以
+  // 能通过，手打却总是提示不对。这里统一转回半角再比较。
+  const toHalfWidth = (s) => s.replace(/[！-～]/g, (c) => String.fromCharCode(c.charCodeAt(0) - 0xFEE0)).replace(/　/g, " ");
+  const norm = (s) => toHalfWidth(s).trim().toLowerCase();
+
   document.getElementById("login-btn").addEventListener("click", () => {
-    const u = document.getElementById("user").value.trim();
-    const p = document.getElementById("pass").value.trim();
-    if (u === DATA.login.username && p === DATA.login.password) {
+    const u = norm(document.getElementById("user").value);
+    const p = norm(document.getElementById("pass").value);
+    if (u === norm(DATA.login.username) && p === norm(DATA.login.password)) {
       loginCard.hidden = true;
       intro.hidden = true;
       inboxCard.hidden = false;
