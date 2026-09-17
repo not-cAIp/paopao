@@ -97,7 +97,7 @@
     </div>
   </header>
 
-  <p class="intro" id="intro">粉丝专属通讯 App，登录后能看到这个账号收到过的所有消息。Bubble ID 和 PIN 都没人直接告诉过你——要从别处拼出来。</p>
+  <p class="intro" id="intro">粉丝专属通讯 App，登录的是抽中周晏星订阅资格的粉丝账号——能看到的是艺人向订阅者发送的广播，不是私人聊天。Bubble ID 和 PIN 都没人直接告诉过你——要从别处拼出来。</p>
 
   <div class="card" id="login-card">
     <div class="app-name">登录泡泡</div>
@@ -112,10 +112,6 @@
 
   <div class="card" id="inbox-card" hidden>
     <div class="loggedas" id="loggedas"></div>
-    <div class="tabs">
-      <button data-tab="broadcast" class="active">群发消息</button>
-      <button data-tab="personal">专属消息</button>
-    </div>
     <div id="tab-content"></div>
   </div>
 </div>
@@ -123,56 +119,29 @@
 <footer style="display:flex;justify-content:center;padding:8px 0 6px;"><img src="images/caip-watermark.png" alt="made by CAIP" style="display:block;width:88%;max-width:360px;height:auto;"></footer>
 
 <script>
+  // 这一版起 Bubble 不再承载任何私人聊天——玩家看到的全部是周晏星
+  // STUDIO 面向订阅者的广播消息，读起来像日常更新，但案发夜后半段
+  // 那几条（23:17 起）字面意思含混，其实是他重新翻出旧小号、想起
+  // 密码、登进去的过程。这些广播不解释自己在说什么，也不 @ 任何人。
   const DATA = {
     login: { username: "ricecake0412", password: "0622" },
     broadcasts: [
       { time: "09-10 07:30", from: "周晏星STUDIO", text: "早呀，今天也要元气满满！记得看今晚的直播哦～" },
       { time: "09-11 22:10", from: "周晏星STUDIO", text: "巡演倒计时3天，好紧张但也好期待，杭州的姐妹到时候见！" },
-      { time: "09-13 07:45", from: "周晏星STUDIO", text: "今天行程有点满，晚点更新，大家等我～" }
+      { time: "09-13 07:45", from: "周晏星STUDIO", text: "今天行程有点满，晚点更新，大家等我～" },
+      { time: "09-13 19:26", from: "周晏星STUDIO", text: "今天行程有点变化，不去杭州了。", clueId: "c25" },
+      { time: "09-13 22:34", from: "周晏星STUDIO", text: "回家了。" },
+      { time: "09-13 23:17", from: "周晏星STUDIO", text: "今天突然翻到一些很久以前的东西。" },
+      { time: "09-13 23:31", from: "周晏星STUDIO", text: "原来以前说过的话真的会一直留着。" },
+      { time: "09-13 23:38", from: "周晏星STUDIO", text: "差点忘了那个号密码。", clueId: "c26" },
+      { time: "09-13 23:40", from: "周晏星STUDIO", text: "居然还能登。" }
     ],
-    personalMessages: {
-      note: "这些不是群发——只有这个账号收到过。",
-      messages: [
-        { from: "周晏星", time: "07-20 21:00", text: "巡演彩排定妆照发我看看呗" },
-        { from: "你", time: "07-20 21:05", text: "不行，剧透" },
-        { from: "周晏星", time: "07-25 19:40", text: "新歌录完了，超累" },
-        { from: "你", time: "07-25 19:45", text: "辛苦啦，早点休息" },
-        { from: "周晏星", time: "08-02 22:10", text: "你说要是有一天不干这行了会怎么样" },
-        { from: "你", time: "08-02 22:15", text: "那也挺好的啊" },
-        { from: "周晏星", time: "08-02 22:16", text: "随口说说" },
-        { from: "周晏星", time: "08-08 20:30", text: "今天彩排好累" },
-        { from: "你", time: "08-08 20:35", text: "早点睡，别等我" },
-        { from: "周晏星", time: "08-15 19:00", text: "你是不是又没吃饭" },
-        { from: "你", time: "08-15 19:05", text: "年糕今天又打翻猫粮了" },
-        { from: "周晏星", time: "08-20 23:20", text: "采访问了些很奇怪的问题" },
-        { from: "你", time: "08-20 23:22", text: "比如" },
-        { from: "周晏星", time: "08-20 23:25", text: "算了不说了" },
-        { from: "周晏星", time: "08-27 22:00", text: "最近真的睡不够" },
-        { from: "你", time: "08-27 22:01", text: "明天应该会好一点" },
-        { from: "周晏星", time: "09-02 21:15", text: "杭州那场巡演海报出了，好看嘛" },
-        { from: "你", time: "09-02 21:20", text: "好看，你也是" },
-        { from: "周晏星", time: "09-05 20:40", text: "今天录了个很长的采访" },
-        { from: "你", time: "09-05 20:41", text: "辛苦了" },
-        { from: "周晏星", time: "09-09 22:50", text: "有时候觉得这些安排都不是我自己能说了算的" },
-        { from: "你", time: "09-09 22:55", text: "怎么突然这么说" },
-        { from: "周晏星", time: "09-09 23:00", text: "没事，就是感慨一下" },
-        { from: "周晏星", time: "09-13 19:26", text: "计划变了，不去了。", clueId: "c25" },
-        { from: "周晏星", time: "09-13 20:02", text: "你别过来。" },
-        { from: "周晏星", time: "09-13 20:36", text: "算了。来吧。", clueId: "c26" },
-        { from: "你", time: "09-13 20:50", text: "到底怎么了" },
-        { from: "你", time: "09-13 21:06", text: "到了，楼下等我一下。", clueId: "c27" },
-        { from: "周晏星", time: "09-13 21:47", text: "那时候我没保护好你。这次我不会再让他们说你。" },
-        { from: "你", time: "09-13 22:11", text: "你先把自己的事情处理清楚。别再来找我了。" },
-        { from: "周晏星", time: "09-13 23:12", text: "今晚真的说了很多。" },
-        { from: "周晏星", time: "09-13 23:12", text: "谢谢你听我说完。", clueId: "c28" },
-        { from: "周晏星", time: "09-13 23:52", text: "你睡了吗？", meta: "未读", clueId: "c29" },
-        { from: "系统", time: "09-13 23:52", text: "对方已下线", system: true }
-      ]
-    }
+    // 不是一条消息，是账号状态——最后一次有动作的时间，不解释这段
+    // 时间他做了什么，真正的内容不在 Bubble 里。
+    lastActive: "09-13 23:52"
   };
 
   let attempts = 0;
-  let activeTab = "broadcast";
 
   const loginCard = document.getElementById("login-card");
   const inboxCard = document.getElementById("inbox-card");
@@ -193,7 +162,7 @@
       intro.hidden = true;
       inboxCard.hidden = false;
       document.getElementById("loggedas").textContent = `已登录：${DATA.login.username}`;
-      renderTab();
+      renderInbox();
       return;
     }
     attempts++;
@@ -204,40 +173,21 @@
     }
   });
 
-  document.querySelectorAll(".tabs button").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      activeTab = btn.dataset.tab;
-      document.querySelectorAll(".tabs button").forEach((b) => b.classList.toggle("active", b === btn));
-      renderTab();
-    });
-  });
-
-  function renderTab() {
+  function renderInbox() {
     const el = document.getElementById("tab-content");
-    if (activeTab === "broadcast") {
-      el.innerHTML = `<div class="thread">${DATA.broadcasts
-        .map((m) => msgRowHtml(m, false))
-        .join("")}</div>`;
-      return;
-    }
     el.innerHTML = `
-      <p class="note">${DATA.personalMessages.note}</p>
-      <div class="thread">${DATA.personalMessages.messages
-        .map((m) => msgRowHtml(m, m.from === "你"))
-        .join("")}</div>
+      <p class="note">艺人广播 · 订阅者可见</p>
+      <div class="thread">${DATA.broadcasts.map((m) => msgRowHtml(m)).join("")}</div>
+      <div class="msg-sys" style="margin-top:8px;">最后活跃：${DATA.lastActive}</div>
     `;
   }
 
-  function msgRowHtml(m, isOut) {
-    if (m.system) {
-      return `<div class="msg-sys">${m.text} · ${m.time}</div>`;
-    }
-    const avatarSrc = isOut ? "images/avatar-shiguang-cat.jpg" : "images/fan-avatar-yanxing-variety.jpg";
+  function msgRowHtml(m) {
     return `
-      <div class="msg-row ${isOut ? "out" : ""}">
-        <div class="msg-avatar"><img src="${avatarSrc}" alt="" /></div>
+      <div class="msg-row">
+        <div class="msg-avatar"><img src="images/fan-avatar-yanxing-variety.jpg" alt="" /></div>
         <div class="msg-col">
-          <div class="msg ${isOut ? "out" : "in"}">${m.text}</div>
+          <div class="msg in">${m.text}</div>
           <div class="msg-time mono">${m.time}${m.meta ? " · " + m.meta : ""}</div>
         </div>
       </div>
